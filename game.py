@@ -42,7 +42,7 @@ class Game:
 
     def game_over_(self) -> bool:
         """checks if game is over"""
-        return not self.snake.alive or len(self.snake.snake) == self.grid_size ** 2
+        return not self.snake.alive or len(self.snake.snake) == self.grid_size ** 2 or self.collision_food(self) or self.outof_boundary()
 
     def collision(self) -> bool:
         """checks if snake has collided with itself"""

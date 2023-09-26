@@ -1,23 +1,37 @@
 from game import Game
 import random
 
-from player import Human
+from player import Human, AI
 
 
 def runner_1():
     """Runs the game"""
     game = Game(9)
-    player = Human()
-    while not game.game_over:
+    player = AI()
+    while not game.game_end():
         move = player.make_move(game)
+
         game.print_game()
 
         print("Move:", move)
 
-        game.record_move(move)
+        val = game.record_move(move)
+
+        if not val:
+            print("Game Over")
+            break
 
 
-        input("Press enter to continue")
+        # input("Press enter to continue")
+
+
+    print("Score:", game.score())
+    print("Game Over")
+
+
+    print("Final Board")
+
+    game.print_game()
     
 
 
