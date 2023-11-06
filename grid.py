@@ -1,7 +1,7 @@
 """ Grid for the game will be represented as Graphs containing """
 from __future__ import annotations
 
-from typing import Optional
+from typing import Optional, List, Tuple
 
 
 class Grid:
@@ -9,6 +9,7 @@ class Grid:
     """
     size: int
     grid: list[list[Node]]
+    cycle: list[tuple]
 
     def __init__(self, size: Optional[int] = 9) -> None:
         """
@@ -16,6 +17,7 @@ class Grid:
         """
         self.size = size
         self.grid = [[Node(x, y) for y in range(size)] for x in range(size)]
+        self.cycle = self.hamiltonian_cycle(size)
 
         for column in self.grid:
             for stone in column:
@@ -46,6 +48,41 @@ class Grid:
                     print(".", end=" ")
             print()
         print()
+
+    def is_valid_move(self, x, y, n, path):
+        """ Check if the next move (x, y) is valid. """
+        return (0 <= x < n) and (0 <= y < n) and ((x, y) not in path)
+
+    def find_hamiltonian_cycle(self, n, path, x, y, dx, dy):
+        """ Try to find a Hamiltonian cycle in an n x n grid. """
+        if len(path) == n*n:
+            # Check if the last vertex is adjacent to the first vertex to form a cycle.
+            if (path[0][0] - x, path[0][1] - y) in zip(dx, dy):
+                return path
+            else:
+                return None
+        
+        # Try all possible movements
+        for i in range(4):
+            next_x, next_y = x + dx[i], y + dy[i]
+            if self.is_valid_move(next_x, next_y, n, path):
+                path.append((next_x, next_y))  # Make move
+                result = self.find_hamiltonian_cycle(n, path, next_x, next_y, dx, dy)
+                if result is not None:
+                    return result  # If cycle is found
+                path.pop()  # Backtrack if no cycle is found from this move
+        
+        return None
+
+    def hamiltonian_cycle(self, n):
+        """ Wrapper function to setup and start the backtracking algorithm for finding a Hamiltonian cycle. """
+        # Possible movements: right, down, left, up
+        dx = [1, 0, -1, 0]
+        dy = [0, 1, 0, -1]
+
+        # Start from the top-left corner of the grid (0,0)
+        path = [(0, 0)]
+        return self.find_hamiltonian_cycle(n, path, 0, 0, dx, dy)
 
 
 class Node:
@@ -87,3 +124,5 @@ class Node:
         for key in self.neighbours:
             cords.append(key)
         return cords
+
+

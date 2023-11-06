@@ -63,7 +63,7 @@ class Game:
 
     def record_move(self, move: tuple[int, int]) -> bool:
         """records move of snake"""
-        if self.game_over_():
+        if self.game_over_() or move not in self.possible_moves:
             
             return False
         elif self.collision_food(move):

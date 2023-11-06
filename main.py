@@ -1,44 +1,30 @@
 from game import Game
 import random
 
-from player import Human, AI
+from player import Human , Djaktra, A_star, DFS, BFS ,  Hamiltonin
+
+from typing import Type, Dict, List
+from test import simulate_games, plot_results
 
 
-def runner_1():
-    """Runs the game"""
-    game = Game(9)
-    player = AI()
-    while not game.game_end():
-        move = player.make_move(game)
-
-        game.print_game()
-
-        print("Move:", move)
-
-        val = game.record_move(move)
-
-        if not val:
-            print("Game Over")
-            break
-
-
-        # input("Press enter to continue")
-
-
-    print("Score:", game.score())
-    print("Game Over")
-
-
-    print("Final Board")
-
-    game.print_game()
+def main():
+    # List of player types
+    # player_types = [Human, Djaktra, A_star, DFS, BFS, FloodFill ,  AI_Hamiltonian_Dijkstra]
+    player_types = [Hamiltonin]
+    grid_size = 10  # Grid size for the game
     
+    # Conduct Simulations
+    results = simulate_games(grid_size, player_types)
+    
+    # Print Results
+    for player, result in results.items():
+        print(f"{player}: Time = {result['Time']} seconds, Score = {result['Score']}")
+    
+    # # Plot Results
+    # plot_results(results)
 
 
     
 
+main()
 
-
-
-
-runner_1()
