@@ -20,15 +20,15 @@ class Grid:
         self.cycle = self.hamiltonian_cycle(size)
 
         for column in self.grid:
-            for stone in column:
-                if stone.x + 1 < size:
-                    stone.add_neighbour(self.get_node(stone.x + 1, stone.y))
-                if stone.x - 1 >= 0:
-                    stone.add_neighbour(self.get_node(stone.x - 1, stone.y))
-                if stone.y + 1 < size:
-                    stone.add_neighbour(self.get_node(stone.x, stone.y + 1))
-                if stone.y - 1 >= 0:
-                    stone.add_neighbour(self.get_node(stone.x, stone.y - 1))
+            for point in column:
+                if point.x + 1 < size:
+                    point.add_neighbour(self.get_node(point.x + 1, point.y))
+                if point.x - 1 >= 0:
+                    point.add_neighbour(self.get_node(point.x - 1, point.y))
+                if point.y + 1 < size:
+                    point.add_neighbour(self.get_node(point.x, point.y + 1))
+                if point.y - 1 >= 0:
+                    point.add_neighbour(self.get_node(point.x, point.y - 1))
 
     def get_node(self, x: int, y: int) -> Node:
         """Return the node at the given coordinates."""
@@ -56,13 +56,13 @@ class Grid:
     def find_hamiltonian_cycle(self, n, path, x, y, dx, dy):
         """ Try to find a Hamiltonian cycle in an n x n grid. """
         if len(path) == n*n:
-            # Check if the last vertex is adjacent to the first vertex to form a cycle.
+        
             if (path[0][0] - x, path[0][1] - y) in zip(dx, dy):
                 return path
             else:
                 return None
         
-        # Try all possible movements
+
         for i in range(4):
             next_x, next_y = x + dx[i], y + dy[i]
             if self.is_valid_move(next_x, next_y, n, path):
@@ -76,11 +76,10 @@ class Grid:
 
     def hamiltonian_cycle(self, n):
         """ Wrapper function to setup and start the backtracking algorithm for finding a Hamiltonian cycle. """
-        # Possible movements: right, down, left, up
+        
         dx = [1, 0, -1, 0]
         dy = [0, 1, 0, -1]
 
-        # Start from the top-left corner of the grid (0,0)
         path = [(0, 0)]
         return self.find_hamiltonian_cycle(n, path, 0, 0, dx, dy)
 
@@ -106,12 +105,12 @@ class Node:
 
     def add_neighbour(self, neighbour: Node) -> None:
         """
-        Adds a neighbour to the stone if it is adjacent to the stone.
+        Adds a neighbour to the point if it is adjacent to the point.
 
         Args:
-            neighbour (Stone): The neighbouring stone to add.
+            neighbour (point): The neighbouring point to add.
         """
-        # Check if the neighbor is adjacent to the current stone
+        # Check if the neighbor is adjacent to the current point
         if abs(self.x - neighbour.x) + abs(self.y - neighbour.y) == 1:
             self.neighbours[neighbour.x, neighbour.y] = neighbour
             neighbour.neighbours[self.x, self.y] = self
@@ -119,7 +118,7 @@ class Node:
             raise Exception
 
     def get_neighbours(self) -> list[tuple[int, int]]:
-        """Return the neighbours of the stone"""
+        """Return the neighbours of the point"""
         cords = []
         for key in self.neighbours:
             cords.append(key)

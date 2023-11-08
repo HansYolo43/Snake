@@ -5,19 +5,20 @@ from collections import deque
 
 
 class Player():
+    
 
     def make_move(self, game: Game):
         """Makes a move"""
         raise NotImplementedError
 
 
-class Human(Player):
+class Random(Player):
     """Human player"""
 
     def make_move(self, game: Game) -> tuple[int, int]:
         chosen = random.choice(game.possible_moves)
 
-        print(chosen)
+        
         return chosen
 
 
@@ -128,11 +129,6 @@ class A_star(Player):
             path.insert(0, current)
         return path[1]  # return the next step towards the goal
 
-
-class DFS(Player):
-    """Uses Depth First Search to make a move"""
-
-
 class DFS(Player):
     """Uses Depth First Search to make a move"""
 
@@ -142,58 +138,52 @@ class DFS(Player):
         visited = set()
         path = []
 
-        # Early exit if the goal is a neighbour.
-        if goal in game.possible_moves:
-            return goal
-
-        # Perform DFS and find a path.
+        # Perform DFS and find a path
         if self.dfs(game, start, goal, visited, path):
-            print(path)
-            return path  # Return the next move towards the goal.
+            return path[1:]  # Skip the first element.
+        else:
+            return []  # Return an empty path
 
     def dfs(self, game: Game, current: tuple[int, int], goal: tuple[int, int], visited: set, path: list) -> bool:
-        # Check for reaching the goal.
-        if current == goal:
-            path.append(current)  # Don't forget to add the goal to the path.
-            return True
-
-        # Check for already visited nodes.
-        if current in visited:
-            return False
-
+        # Add the current position to the path and visited nodes
+        path.append(current)
         visited.add(current)
 
-        # Get valid neighbours.
+        # If the current position is the goal, we found path
+        if current == goal:
+            return True
+
+        # Get valid neighbors, considering the game rules.
         node = game.grid.get_node(current[0], current[1])
-        neighbours = [neigh for neigh in node.get_neighbours() if
-                      neigh not in game.snake.snake]
+        neighbors = [neighbor for neighbor in node.get_neighbours() if neighbor not in visited and neighbor not in game.snake.snake]
 
-        for neighbour in neighbours:
-            path.append(neighbour)  # Add the neighbour to the path before the recursive call.
-            if self.dfs(game, neighbour, goal, visited, path):
+        # Explore each neighbor for a valid path
+        for neighbor in neighbors:
+            if self.dfs(game, neighbor, goal, visited, path):
                 return True
-            path.pop()  # Remove the neighbour if the path is not valid.
 
+        # If none of the neighbors lead to a solution, backtrack
+        path.pop()
         return False
 
 
 class BFS(Player):
     """Uses Breadth First Search to make a move
-    Returns the path and with the start in it"""
+    Returns the path from the snake's head to the food, not including the start position."""
 
     def make_move(self, game: Game) -> list[tuple[int, int]]:
         start = game.snake.snake_head
         goal = game.food
 
         visited = set()
-        queue = deque([(start, [])])  # Queue holds the node and the path to reach it
+        queue = deque([(start, [])])  # Queue holds the node and the path
 
         while queue:
             current, path = queue.popleft()
 
-            # If the goal is found, return the full path
+            # If the goal is found, 
             if current == goal:
-                return path + [current]
+                return path  
 
             if current in visited:
                 continue
@@ -201,16 +191,13 @@ class BFS(Player):
             visited.add(current)
 
             node = game.grid.get_node(current[0], current[1])
-            neighbours = [neigh for neigh in node.get_neighbours() if
-                          neigh not in game.snake.snake]
+            neighbours = [neigh for neigh in node.get_neighbours() if neigh not in game.snake.snake]
 
             for neighbour in neighbours:
                 if neighbour not in visited:
-                    # Add the neighbour to the path and add it to the queue
-                    queue.append((neighbour, path + [current]))
+                    
+                    queue.append((neighbour, path + [neighbour])) 
 
-        # In case no path is found, return an empty list or handle accordingly
-        return []
 
 
 class Hamiltonin(Player):
@@ -234,8 +221,6 @@ class Hamiltonin(Player):
         index1 += 1
         index2 += 1
 
-        print(index1, index2)
-        print('jl')
 
         if index1 < index2:
             path = cycle[index1:index2 + 1]
@@ -244,7 +229,4 @@ class Hamiltonin(Player):
 
 
         return path
-# game = Game(9)
-# player = Hamiltonin()
 
-# player.make_move(game)

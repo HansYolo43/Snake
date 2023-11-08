@@ -1,2 +1,4 @@
 pygame
-plotly==5.17.0
+plotpy==5.17.0
+arcade==2.6.6
+```
