@@ -52,6 +52,8 @@ class StartView(arcade.View):
                          arcade.color.GRAY, font_size=20, anchor_x="center")
         arcade.draw_text("Press S to simulate", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - 50,
                          arcade.color.GRAY, font_size=20, anchor_x="center")
+        
+        #
 
     def on_mouse_press(self, _x, _y, _button, _modifiers):
         """ If the user presses the mouse button, start the game. """
@@ -73,7 +75,7 @@ CELL_WIDTH = 20
 CELL_HEIGHT = 20
 GRID_WIDTH = SCREEN_WIDTH // CELL_WIDTH
 GRID_HEIGHT = SCREEN_HEIGHT // CELL_HEIGHT
-INITIAL_SPEED = 10  # Initial frames between each update
+INITIAL_SPEED = 10  
 
 class GameView(arcade.View):
     def __init__(self):
@@ -123,6 +125,9 @@ class GameView(arcade.View):
             self.snake_direction = (-1, 0)
         elif key == arcade.key.RIGHT and self.snake_direction != (-1, 0):
             self.snake_direction = (1, 0)
+        elif key == arcade.key.ESCAPE:
+            start_view = StartView()
+            self.window.show_view(start_view)
 
     def update(self, delta_time):
         """ Movement and game logic """
@@ -133,7 +138,7 @@ class GameView(arcade.View):
             # Reset the frame counter
             self.frames_since_last_move = 0
 
-            # Move the snake
+            
             head_x, head_y = self.snake_body[0]
             new_x = head_x + self.snake_direction[0]
             new_y = head_y + self.snake_direction[1]
@@ -157,7 +162,7 @@ class GameView(arcade.View):
                 self.snake_body.insert(0, (new_x, new_y))
 
     def spawn_food(self):
-        # Randomly place the food on the grid, but not on the snake body
+        
         while True:
             self.food_x = random.randint(0, GRID_WIDTH - 1)
             self.food_y = random.randint(0, GRID_HEIGHT - 1)
@@ -170,7 +175,7 @@ class GameView(arcade.View):
 
     def game_over(self):
         print("Game over!")
-        # Switch to the end view
+        
         end_view = EndView(self.score, self.total_time)
         self.window.show_view(end_view)
 
@@ -208,16 +213,14 @@ class EndView(arcade.View):
     def on_key_press(self, key, modifiers):
         """ Called whenever a key is pressed. """
         if key == arcade.key.R:
-            # Restart the game
             game_view = GameView()
             self.window.show_view(game_view)
         elif key == arcade.key.M:
-            # Return to the main menu
-            # main_menu_view = MainMenuView()  # Assuming you have a MainMenuView class
-            # self.window.show_view(main_menu_view)
             start_view = StartView()
             self.window.show_view(start_view)
-           # Placeholder for main menu view
+        elif key == arcade.key.ESCAPE:
+            start_view = StartView()
+            self.window.show_view(start_view)
 
 
 #SIMULATE VIEW
@@ -229,7 +232,7 @@ SCREEN_TITLE = "Snake Game Simulation"
 # Constants for simulation options
 SIMULATION_OPTIONS = ['Random', 'Dijkstra', 'A*', 'DFS', 'BFS', 'Hamiltonian']
 SIMULATION_FUNCTIONS = {
-    'Random': Random,  # Placeholder for actual simulation function
+    'Random': Random,  
     'Dijkstra': Djaktra,
     'A*': A_star,
     'DFS': DFS,
@@ -242,9 +245,9 @@ class SimulateView(arcade.View):
     def __init__(self):
         super().__init__()
         self.selected_option_index = 0
-        self.grid_size = 20  # Default grid size
-        self.input_mode = False  # Flag to check if we're in grid size input mode
-        self.input_value = ""  # Temporary storage for the input
+        self.grid_size = 20  
+        self.input_mode = False 
+        self.input_value = ""  
 
     def on_draw(self):
         """ Draw the simulation selection menu. """
@@ -272,9 +275,11 @@ class SimulateView(arcade.View):
         instructions = "Use UP/DOWN to change selection, ENTER to start, and type G to set grid size."
         arcade.draw_text(instructions, SCREEN_WIDTH / 2, 40, arcade.color.LIGHT_GRAY, font_size=16, anchor_x="center")
 
+        
+
     def on_key_press(self, key, modifiers):
         """ Handle user input for simulation selection. """
-        # If we're in input mode, handle number input
+        
         if self.input_mode:
             if key >= arcade.key.KEY_0 and key <= arcade.key.KEY_9:
                 self.input_value += chr(key)
@@ -285,9 +290,12 @@ class SimulateView(arcade.View):
                 self.grid_size = int(self.input_value)
                 self.input_mode = False
                 self.input_value = ""
+            elif key == arcade.key.ESCAPE:
+                start_view = StartView()
+                self.window.show_view(start_view)
             return
 
-        # If not in input mode, handle option selection
+        
         if key == arcade.key.UP:
             self.selected_option_index = max(0, self.selected_option_index - 1)
         elif key == arcade.key.DOWN:
@@ -299,9 +307,11 @@ class SimulateView(arcade.View):
         elif key == arcade.key.G:
             # Enter input mode to change grid size
             self.input_mode = True
+        elif key == arcade.key.ESCAPE:
+            start_view = StartView()
+            self.window.show_view(start_view)
 
         
-    # Add your simulation logic here
 
 import time
 
@@ -311,16 +321,17 @@ SCREEN_HEIGHT = 600
 
 
 SCREEN_TITLE = "Snake Game Simulation"
-INITIAL_SPEED = 0.001 # Initial frames between each update
+INITIAL_SPEEDS = 0.0001 # Initial frames between each update
 
 class SimulationView(arcade.View):
+    
     def __init__(self, grid_size, player_class):
         super().__init__()
         self.game = Game(grid_size)
         self.player = player_class()
         self.total_time = 0.0
         self.frames_since_last_move = 0
-        self.frames_between_moves = INITIAL_SPEED
+        self.frames_between_moves = INITIAL_SPEEDS
         self.grid  = grid_size
 
 
@@ -367,7 +378,6 @@ class SimulationView(arcade.View):
             next_move = self.player.make_move(self.game)
 
             if isinstance(next_move, list):  # Path-based player
-                # Follow the path one step at a time
                 if next_move:
                     
                     self.game.record_move(next_move.pop(0))
@@ -386,14 +396,11 @@ class SimulationView(arcade.View):
         end_view = EndView(self.game.score(), self.total_time)
         self.window.show_view(end_view)
 
-
-
-
-
-# window = arcade.Window(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
-# simulation_view = SimulationView(GRID_WIDTH, A_star)  # Replace Random with any other player class as needed
-# window.show_view(simulation_view)
-# arcade.run()
+    def on_key_press(self, key, modifiers):
+        """ Called whenever a key is pressed. """
+        if key == arcade.key.ESCAPE:
+            start_view = StartView()
+            self.window.show_view(start_view)
 
 
 def main():
@@ -404,6 +411,6 @@ def main():
 
 if __name__ == "__main__":
     main()
-    pass
+
 
 
